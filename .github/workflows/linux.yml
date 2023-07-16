@@ -4,11 +4,6 @@ name: "[Linux] Build go brrrr"
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -41,7 +36,7 @@ jobs:
       - name: Get Dependencies
         run: |
           sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
-          sudo apt update && sudo apt install cmake \
+          sudo apt update && sudo apt install cmake p7zip-full \
                                               libsdl2-dev \
                                               libopenal-dev \
                                               libavcodec-dev \
@@ -50,19 +45,16 @@ jobs:
                                               libswscale-dev \
                                               libvulkan-dev
 
-      # Step 1
-      - name: "[1/2] Build"
+      # Build
+      - name: "Build"
         run: |
-          cd neo/; ./cmake-linux-release.sh
-
-      # Step 2
-      - name: "[2/2] Build"
-        run: |
-          cd "$GITHUB_WORKSPACE"
-          cd build/; make
+          WORKDIR="$PWD"
+          cd neo/ && ./cmake-linux-release.sh
+          cd ../build && make -j $(nproc --all)
+          cd "$WORKDIR" && 7z a RBDOOM-3-BFG-1.5.1.2-full-linux_x64-20230523-git-39ae120.7z -r base/env/ base/maps/*.lightgrid base/maps/*_extra_ents.map -x!generated 
 
       # Upload    
       - name: "Upload"
         uses: actions/upload-artifact@v3.1.2
         with:
-            path: "${{ github.workspace }}/build"
+            path: "${{ github.workspace }}/RBDOOM-3-BFG-1.5.1.2-full-linux_x64-20230523-git-39ae120.7z"
