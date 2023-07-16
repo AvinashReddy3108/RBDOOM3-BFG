@@ -32,6 +32,8 @@ jobs:
       # Dependencies
       - name: Get Dependencies
         run: |
+          wget 'https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.7.2212.1/linux_dxc_2023_03_01.x86_64.tar.gz'
+          tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "$HOME/.local/bin" --transform 's|.*bin/dxc|dxc|'
           sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
           sudo apt update && sudo apt install cmake \
                                               libsdl2-dev \
