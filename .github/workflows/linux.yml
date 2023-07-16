@@ -45,6 +45,7 @@ jobs:
       # Step 1
       - name: "[1/2] Build"
         run: |
+          echo "PATH: $PATH"
           cd neo/
           ./cmake-linux-release.sh
 
