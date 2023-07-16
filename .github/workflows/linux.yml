@@ -51,10 +51,9 @@ jobs:
           WORKDIR="$PWD"
           cd neo/ && ./cmake-linux-release.sh
           cd ../build && make -j $(nproc --all)
-          cd "$WORKDIR" && 7z a RBDOOM-3-BFG-1.5.1.2-full-linux_x64-20230523-git-39ae120.7z -r base/env/ base/maps/*.lightgrid base/maps/*_extra_ents.map -x!generated 
 
       # Upload    
       - name: "Upload"
         uses: actions/upload-artifact@v3.1.2
         with:
-            path: "${{ github.workspace }}/RBDOOM-3-BFG-1.5.1.2-full-linux_x64-20230523-git-39ae120.7z"
+            path: "${{ github.workspace }}"
