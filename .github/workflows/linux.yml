@@ -27,6 +27,7 @@ jobs:
         with:
           repository: 'RobertBeckebans/RBDOOM-3-BFG'
           ref: 'v1.5.1'
+          path: 'sauce'
           submodules: 'recursive'
 
       # Dependencies
@@ -53,11 +54,12 @@ jobs:
       # Step 2
       - name: "[2/2] Build"
         run: |
-          cd ../build
+          cd "$GITHUB_WORKSPACE/sauce"
+          cd build/
           make
 
       # Upload    
       - name: "Upload"
         uses: actions/upload-artifact@v3.1.2
         with:
-            path: build/
+            path: "$GITHUB_WORKSPACE/sauce/build"
