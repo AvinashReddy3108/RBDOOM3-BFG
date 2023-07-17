@@ -1,59 +1,43 @@
-# This is a basic workflow to help you get started with Actions
-
 name: "[Linux] Build go brrrr"
 
-# Controls when the workflow will run
 on:
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
-          repository: 'RobertBeckebans/RBDOOM-3-BFG'
           ref: 'v1.5.1'
           submodules: 'recursive'
 
-      # Dependencies
       - name: Setup DirectX Shader Compiler
         run: |
           wget 'https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.7.2212.1/linux_dxc_2023_03_01.x86_64.tar.gz'
-          mkdir -pv "$HOME/.local/bin"; tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "$HOME/.local/bin" --transform 's|.*bin/dxc|dxc|'; chmod +x "$HOME/.local/bin/dxc"
-          sudo tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "/usr/lib" --transform 's|.*lib/libdxcompiler.so|libdxcompiler.so|'
-          sudo tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "/usr/lib" --transform 's|.*lib/libdxil.so|libdxil.so|'
+          mkdir -pv "$HOME/.local/bin"
+          tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "$HOME/.local/bin" --strip-components=1 '**/bin/dxc'
+          sudo tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "/usr/lib" --strip-components=2 '**/lib/libdxcompiler.so'
+          sudo tar -xf linux_dxc_2023_03_01.x86_64.tar.gz -C "/usr/lib" --strip-components=2 '**/lib/libdxil.so'
 
-      # Dependencies
-      - name: Get Dependencies
+      - name: Add Ubuntu PPAs for some packages
         run: |
-          sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
-          sudo apt update && sudo apt install cmake p7zip-full \
-                                              libsdl2-dev \
-                                              libopenal-dev \
-                                              libavcodec-dev \
-                                              libavformat-dev \
-                                              libavutil-dev \
-                                              libswscale-dev \
-                                              libvulkan-dev
+          sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+          sudo apt update
 
-      # Build
-      - name: "Build"
+      - name: Install dependencies
         run: |
-          WORKDIR="$PWD"
-          cd neo/ && ./cmake-linux-release.sh
-          cd ../build && make -j $(nproc --all)
+          sudo apt install -y cmake p7zip-full libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libvulkan-dev
 
-      # Upload    
-      - name: "Upload"
-        uses: actions/upload-artifact@v3.1.2
+      - name: Build
+        run: |
+          cmake -G "Unix Makefiles" -S neo -B build -DCMAKE_BUILD_TYPE="Release" -DFFMPEG=OFF -DBINKDEC=ON -DUSE_PRECOMPILED_HEADERS=OFF -Wno-dev
+          cmake --build build -- -j $(nproc --all)
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
         with:
-            path: "${{ github.workspace }}"
+          name: RBDoom3BFG
+          path: build/RBDoom3BFG
