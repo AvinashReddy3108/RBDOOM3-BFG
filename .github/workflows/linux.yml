@@ -39,5 +39,10 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: RBDoom3BFG
-          path: build/RBDoom3BFG
+          name: RBDoom3BFG_v1.5.1-Linux
+          path: |
+            build/RBDoom3BFG
+            base/
+            tools/
+            README.md
+            RELEASE-NOTES.md
