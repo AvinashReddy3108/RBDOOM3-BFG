@@ -11,6 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
+          repository: 'RobertBeckebans/RBDOOM-3-BFG'
           ref: 'v1.5.1'
           submodules: 'recursive'
 
