@@ -34,7 +34,7 @@ jobs:
 
       - name: 🏗️ Build
         run: |
-          cmake -G "Unix Makefiles" -S neo -B build -DCMAKE_BUILD_TYPE="Release" -DFFMPEG=OFF -DBINKDEC=ON -DONATIVE=ON -DDOOM_CLASSIC=OFF -Wno-dev
+          cmake -G "Unix Makefiles" -S neo -B build -DCMAKE_BUILD_TYPE="Release" -DFFMPEG=OFF -DBINKDEC=ON -DDOOM_CLASSIC=OFF -Wno-dev
           cmake --build build -- -j $(nproc --all)
 
       - name: 📦️ Upload artifacts
