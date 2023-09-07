@@ -1,4 +1,4 @@
-name: "[Linux] Build RBDoom3-BFG"
+name: "[Linux] Build RBDoom3-BFG (Without classic DOOM)"
 
 on:
   workflow_dispatch:
@@ -34,13 +34,13 @@ jobs:
 
       - name: 🏗️ Build
         run: |
-          cmake -G "Unix Makefiles" -S neo -B build -DCMAKE_BUILD_TYPE="Release" -DFFMPEG=OFF -DBINKDEC=ON -DONATIVE=ON -Wno-dev
+          cmake -G "Unix Makefiles" -S neo -B build -DCMAKE_BUILD_TYPE="Release" -DFFMPEG=OFF -DBINKDEC=ON -DONATIVE=ON -DDOOM_CLASSIC=OFF -Wno-dev
           cmake --build build -- -j $(nproc --all)
 
       - name: 📦️ Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: RBDoom3BFG_v1.5.1-Linux
+          name: RBDoom3BFG_v1.5.1_NOCLASSIC-Linux
           path: |
             build/RBDoom3BFG
             base/renderprogs2/
